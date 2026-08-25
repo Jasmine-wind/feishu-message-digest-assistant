@@ -1,0 +1,18 @@
+[Unit]
+Description=Feishu Message Digest Scheduler
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=feishu-assistant
+Group=feishu-assistant
+WorkingDirectory=/opt/feishu-message-digest-assistant
+EnvironmentFile=/etc/feishu-message-digest-assistant/env
+ExecStart=/opt/feishu-message-digest-assistant/.venv/bin/feishu-assistant digest-scheduler
+Restart=on-failure
+RestartSec=10
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

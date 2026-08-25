@@ -1,0 +1,18 @@
+[Unit]
+Description=Feishu Message Digest OAuth Web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=feishu-assistant
+Group=feishu-assistant
+WorkingDirectory=/opt/feishu-message-digest-assistant
+EnvironmentFile=/etc/feishu-message-digest-assistant/env
+ExecStart=/opt/feishu-message-digest-assistant/.venv/bin/feishu-assistant oauth-web
+Restart=on-failure
+RestartSec=5
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

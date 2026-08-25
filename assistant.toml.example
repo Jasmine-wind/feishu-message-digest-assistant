@@ -1,0 +1,53 @@
+# Copy to assistant.toml and adjust values for the deployment environment.
+# Secrets belong in .env or the process manager's secret store.
+
+[features]
+message_digest = true
+meeting_summary = false
+
+[feishu]
+app_id = "cli_your_app_id"
+base_url = "https://open.feishu.cn/open-apis"
+
+[users]
+# OAuth users are persisted automatically. Keep these empty in normal deployments.
+legacy_open_ids = []
+legacy_oauth_profiles = {}
+
+[message_digest]
+times = ["08:00", "12:00", "18:00"]
+timezone = "Asia/Shanghai"
+read_identity = "user"
+initial_lookback_hours = 24
+retry_attempts = 3
+banner_image_key = ""
+
+[meeting_trigger]
+# Dormant compatibility settings. They are unused while meeting_summary=false.
+initial_lookback_minutes = 10
+poll_seconds = 600
+max_attempts = 5
+
+[oauth]
+public_url = "https://assistant.example.com"
+redirect_uri = "https://assistant.example.com/oauth/callback"
+web_host = "127.0.0.1"
+web_port = 8765
+database_file = "artifacts/oauth-users.sqlite3"
+key_file = "artifacts/oauth-token.key"
+
+[storage]
+artifact_dir = "artifacts"
+message_checkpoint_file = "artifacts/message-checkpoint.json"
+meeting_trigger_state_file = "artifacts/meeting-trigger-state.json"
+workspace_state_file = "artifacts/workspace-state.json"
+
+[providers.asr]
+# Only required if meeting_summary is explicitly re-enabled.
+model = "qwen-audio-3.0-asr-flash-filetrans"
+base_url = "https://your-workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+
+[providers.llm]
+model = "qwen3.7-flash"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+enable_thinking = false

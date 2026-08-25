@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "feishu-message-digest-assistant"
+version = "0.1.0"
+description = "Scheduled personal Feishu message digests with OAuth and Base archiving"
+requires-python = ">=3.11"
+dependencies = [
+  "cryptography>=44,<50",
+  "httpx>=0.28,<1",
+  "openai>=2,<3",
+]
+
+[project.optional-dependencies]
+test = [
+  "build>=1.3,<2",
+  "mypy>=1.18,<2",
+  "pytest>=9,<10",
+  "ruff>=0.13,<1",
+]
+
+[project.scripts]
+feishu-assistant = "feishu_assistant.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/feishu_assistant"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
