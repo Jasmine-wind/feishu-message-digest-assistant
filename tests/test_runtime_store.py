@@ -10,7 +10,7 @@ from feishu_assistant.runtime_store import RuntimeStore
 
 def test_runtime_store_persists_names_resources_workspace_and_archive(tmp_path) -> None:
     store = RuntimeStore(tmp_path / "runtime.sqlite3")
-    store.save_names({"ou_user": "刘文涛"})
+    store.save_names({"ou_user": "测试用户"})
     store.save_resource("ou_user", "minutes_assistant_chat_id", "oc_minutes")
     store.save_workspace_version("ou_user", "base", "msg", "meeting", 1)
     store.initialize_archive_cache(
@@ -20,7 +20,7 @@ def test_runtime_store_persists_names_resources_workspace_and_archive(tmp_path) 
     store.mark_archive("new", "ou_user", "message", "succeeded", "rec_new")
 
     reopened = RuntimeStore(tmp_path / "runtime.sqlite3")
-    assert reopened.names({"ou_user", "ou_missing"}) == {"ou_user": "刘文涛"}
+    assert reopened.names({"ou_user", "ou_missing"}) == {"ou_user": "测试用户"}
     assert reopened.resource("ou_user", "minutes_assistant_chat_id") == "oc_minutes"
     assert reopened.workspace_current("ou_user", "base", "msg", "meeting", 1)
     assert reopened.archive_cache_current("ou_user", "message", "base", "msg")

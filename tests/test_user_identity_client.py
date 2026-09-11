@@ -22,7 +22,7 @@ def test_user_identity_discovers_and_reads_group_and_human_p2p() -> None:
             return {
                 "profile": "user-one",
                 "identity": "user",
-                "onBehalfOf": {"openId": "ou_user", "userName": "刘文涛"},
+                "onBehalfOf": {"openId": "ou_user", "userName": "测试用户"},
             }
         if "+chat-list" in command:
             return {
@@ -36,7 +36,7 @@ def test_user_identity_discovers_and_reads_group_and_human_p2p() -> None:
                         },
                         {
                             "chat_id": "oc_person",
-                            "name": "薛量",
+                            "name": "测试同事",
                             "chat_mode": "p2p",
                             "p2p_target_type": "user",
                         },
@@ -60,8 +60,8 @@ def test_user_identity_discovers_and_reads_group_and_human_p2p() -> None:
                 "ok": True,
                 "data": {
                     "items": [
-                        {"member_id": "ou_user", "name": "刘文涛"},
-                        {"member_id": "ou_other", "name": "薛量"},
+                        {"member_id": "ou_user", "name": "测试用户"},
+                        {"member_id": "ou_other", "name": "测试同事"},
                     ]
                 },
             }
@@ -93,16 +93,16 @@ def test_user_identity_discovers_and_reads_group_and_human_p2p() -> None:
     conversations = client.discover_conversations(user)
     messages = client.list_messages("oc_person", 1_700_000_000, 1_700_000_010)
 
-    assert user == User("ou_user", "刘文涛")
+    assert user == User("ou_user", "测试用户")
     assert [
         (conversation.name, conversation.conversation_type, conversation.enabled)
         for conversation in conversations
     ] == [
         ("研发群", ConversationType.GROUP, False),
-        ("薛量", ConversationType.PRIVATE, False),
+        ("测试同事", ConversationType.PRIVATE, False),
     ]
     assert len(messages) == 1
-    assert messages[0].sender_name == "薛量"
+    assert messages[0].sender_name == "测试同事"
     assert messages[0].text == "我今天修复登录问题"
     assert all(command[1:3] == ["--profile", "user-one"] for command in commands)
 
@@ -152,13 +152,13 @@ def test_p2p_name_hint_avoids_member_lookup(tmp_path: Path) -> None:
         runtime_store=RuntimeStore(tmp_path / "runtime.sqlite3"),
     )
     client.set_conversation_context(
-        User("ou_user", "刘文涛"),
-        [Conversation("oc_person", "薛量", ConversationType.PRIVATE, True)],
+        User("ou_user", "测试用户"),
+        [Conversation("oc_person", "测试同事", ConversationType.PRIVATE, True)],
     )
 
     messages = client.list_messages("oc_person", 1_700_000_000, 1_700_000_010)
 
-    assert messages[0].sender_name == "薛量"
+    assert messages[0].sender_name == "测试同事"
     assert not any("/members" in " ".join(command) for command in commands)
 
 
@@ -173,7 +173,7 @@ def test_persisted_sender_name_avoids_member_lookup_after_restart(
             member_calls += 1
             return {
                 "ok": True,
-                "data": {"items": [{"member_id": "ou_other", "name": "薛量"}]},
+                "data": {"items": [{"member_id": "ou_other", "name": "测试同事"}]},
             }
         if "/open-apis/im/v1/messages" in command:
             return {
@@ -199,8 +199,8 @@ def test_persisted_sender_name_avoids_member_lookup_after_restart(
         client = UserIdentityClient(
             "ou_user", runner=runner, runtime_store=RuntimeStore(path)
         )
-        client.set_conversation_context(User("ou_user", "刘文涛"), [conversation])
-        assert client.list_messages("oc_group", 1, 2)[0].sender_name == "薛量"
+        client.set_conversation_context(User("ou_user", "测试用户"), [conversation])
+        assert client.list_messages("oc_group", 1, 2)[0].sender_name == "测试同事"
 
     assert member_calls == 1
 

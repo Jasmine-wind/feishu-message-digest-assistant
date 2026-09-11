@@ -22,7 +22,7 @@ class FakeFeishu:
             duration="1000",
             url="https://meetings.feishu.cn/minutes/obcn123",
             minute_token="obcn123",
-            source_name="刘文涛, 薛量的视频会议",
+            source_name="测试用户, 测试同事的视频会议",
             source_time="2026-08-18 16:07:04 GMT+8",
         )
 
@@ -69,7 +69,7 @@ def test_runs_complete_pipeline_and_sends_confirmed_meeting_card(
 ) -> None:
     feishu = FakeFeishu()
     pipeline = MeetingSummary(
-        feishu, FakeASR(), FakeLLM(), User("ou_target", "刘文涛"), tmp_path
+        feishu, FakeASR(), FakeLLM(), User("ou_target", "测试用户"), tmp_path
     )
 
     result = pipeline.run("meeting/unsafe")
@@ -80,7 +80,7 @@ def test_runs_complete_pipeline_and_sends_confirmed_meeting_card(
     )
     summary_text = result.summary_path.read_text(encoding="utf-8")
     assert "支付功能项目评审" in summary_text
-    assert "会议来源：刘文涛, 薛量的视频会议" in summary_text
+    assert "会议来源：测试用户, 测试同事的视频会议" in summary_text
     assert "会议时间：2026-08-18 16:07:04 GMT+8" in summary_text
     assert "完成支付接口｜张三｜本周五" in summary_text
     assert result.message_id == "om_sent"
@@ -94,7 +94,7 @@ def test_runs_complete_pipeline_and_sends_confirmed_meeting_card(
     elements = card["body"]["elements"]  # type: ignore[index]
     contents = [element.get("content", "") for element in elements]  # type: ignore[union-attr]
     assert (
-        "📍 **会议来源**\n刘文涛, 薛量的视频会议\n"
+        "📍 **会议来源**\n测试用户, 测试同事的视频会议\n"
         "🕒 **会议时间**\n2026-08-18 16:07:04 GMT+8"
     ) in contents
     assert "💡 **核心结论**\n1. 支付功能本周五进入测试" in contents
@@ -154,7 +154,7 @@ def test_reuses_asr_and_llm_after_uncertain_push_failure(
         feishu,
         asr,
         llm,
-        User("ou_target", "刘文涛"),
+        User("ou_target", "测试用户"),
         tmp_path,
     )
 
@@ -185,7 +185,7 @@ def test_sends_card_for_short_test_content_when_llm_has_no_business_sections(
         feishu,
         TestASR(),
         EmptyLLM(),
-        User("ou_target", "刘文涛"),
+        User("ou_target", "测试用户"),
         tmp_path,
     )
 

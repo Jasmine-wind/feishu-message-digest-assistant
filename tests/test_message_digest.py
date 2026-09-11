@@ -57,8 +57,8 @@ def test_lists_messages_with_member_names_and_pagination() -> None:
                     "data": {
                         "has_more": False,
                         "items": [
-                            {"member_id": "ou_sender", "name": "刘文涛"},
-                            {"member_id": "ou_other", "name": "薛量"},
+                            {"member_id": "ou_sender", "name": "测试用户"},
+                            {"member_id": "ou_other", "name": "测试同事"},
                         ],
                     },
                 },
@@ -100,7 +100,7 @@ def test_lists_messages_with_member_names_and_pagination() -> None:
 
     assert [message.message_id for message in messages] == ["om_1", "om_2"]
     assert [message.text for message in messages] == ["第一条", "第二条"]
-    assert [message.sender_name for message in messages] == ["刘文涛", "薛量"]
+    assert [message.sender_name for message in messages] == ["测试用户", "测试同事"]
     assert requests[2].headers["Authorization"] == "Bearer tenant-token"
     assert requests[3].url.params["page_token"] == "next-page"
 
@@ -154,17 +154,17 @@ def _message() -> FeishuMessage:
         sender_id="ou_sender",
         sender_type="user",
         text="请在今天完成支付接口",
-        sender_name="薛量",
+        sender_name="测试同事",
     )
 
 
 def _user() -> User:
-    return User("ou_target", "刘文涛")
+    return User("ou_target", "测试用户")
 
 
 def _conversations() -> list[Conversation]:
     return [
-        Conversation("oc_chat", "刘文涛、薛量", ConversationType.GROUP, enabled=True),
+        Conversation("oc_chat", "测试用户、测试同事", ConversationType.GROUP, enabled=True),
         Conversation("oc_empty", "无消息群", ConversationType.GROUP, enabled=True),
     ]
 
@@ -172,15 +172,15 @@ def _conversations() -> list[Conversation]:
 def _summary() -> MessageDigestSummary:
     return MessageDigestSummary(
         key_events=(
-            DigestEvent("支付接口要求今天完成", "刘文涛、薛量", "薛量"),
+            DigestEvent("支付接口要求今天完成", "测试用户、测试同事", "测试同事"),
         ),
         todos=(
             DigestTodo(
-                "完成支付接口", "刘文涛", "今天", "刘文涛、薛量", "薛量"
+                "完成支付接口", "测试用户", "今天", "测试用户、测试同事", "测试同事"
             ),
         ),
         other_attention=(
-            DigestAttention("下周可能调整测试安排", "刘文涛、薛量", "薛量"),
+            DigestAttention("下周可能调整测试安排", "测试用户、测试同事", "测试同事"),
         ),
     )
 
@@ -209,7 +209,7 @@ def test_digest_sends_confirmed_card_fields_then_advances_checkpoint(
     outcome = digest.run(end_time=end)
 
     assert outcome == DigestOutcome(start, end, 1, True, "om_digest")
-    assert llm.messages[0].source_name == "刘文涛、薛量"
+    assert llm.messages[0].source_name == "测试用户、测试同事"
     card = feishu.sent_cards[0]
     assert card["schema"] == "2.0"
     assert card["config"] == {"update_multi": True, "width_mode": "fill"}
@@ -220,10 +220,10 @@ def test_digest_sends_confirmed_card_fields_then_advances_checkpoint(
     assert banner["img_key"] == ("img_v3_0214h_3a7d0911-84b3-4888-be96-6fbab5178d6g")
     assert banner["corner_radius"] == "8px"
     contents = [element.get("content", "") for element in elements]
-    assert "时间范围：2026-08-14 08:00 ～ 12:00\n消息来源：刘文涛、薛量" in contents
+    assert "时间范围：2026-08-14 08:00 ～ 12:00\n消息来源：测试用户、测试同事" in contents
     assert (
         "**<font color='blue'>关键事件</font>**\n"
-        "- 支付接口要求今天完成｜刘文涛、薛量 · 薛量" in contents
+        "- 支付接口要求今天完成｜测试用户、测试同事 · 测试同事" in contents
     )
     assert "**<font color='blue'>待办事项</font>**" in contents
     todo_rows = [
@@ -240,12 +240,12 @@ def test_digest_sends_confirmed_card_fields_then_advances_checkpoint(
     )
     assert todo_rows[0]["columns"][3]["elements"][0]["content"] == "**消息出处**"
     assert todo_rows[1]["columns"][3]["elements"][0]["text"]["content"] == (
-        "刘文涛、薛量 · 薛量"
+        "测试用户、测试同事 · 测试同事"
     )
     assert all(element.get("tag") != "table" for element in elements)
     assert (
         "**<font color='blue'>其他值得关注</font>**\n"
-        "- 下周可能调整测试安排｜刘文涛、薛量 · 薛量" in contents
+        "- 下周可能调整测试安排｜测试用户、测试同事 · 测试同事" in contents
     )
     assert all("需要回复" not in content for content in contents)
     assert all("我负责" not in content for content in contents)
@@ -287,9 +287,9 @@ def test_digest_todos_show_all_long_items_without_pagination(tmp_path: Path) -> 
     long_todos = tuple(
         DigestTodo(
             f"第 {index} 项：排查并修复排课页面卡顿与数据刷新不及时的问题",
-            "刘文涛、薛量" if index % 2 else "未明确",
+            "测试用户、测试同事" if index % 2 else "未明确",
             "明天下午六点前" if index % 2 else "-",
-            "刘文涛、薛量",
+            "测试用户、测试同事",
             "牛俊泽",
         )
         for index in range(1, 11)

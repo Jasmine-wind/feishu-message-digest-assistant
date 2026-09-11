@@ -160,7 +160,7 @@ def test_llm_summarizes_messages_as_structured_work_items() -> None:
             content=(
                 '{"key_events":[{"content":"项目已上线",'
                 '"source_message_id":"om_1"}],'
-                '"todos":[{"task":"回归测试","assignee":"刘文涛",'
+                '"todos":[{"task":"回归测试","assignee":"测试用户",'
                 '"deadline":"今天","source_message_id":"om_1"}],'
                 '"other_attention":[{"content":"测试环境需持续关注",'
                 '"source_message_id":"om_1"}]}'
@@ -179,21 +179,21 @@ def test_llm_summarizes_messages_as_structured_work_items() -> None:
         sender_id="ou_1",
         sender_type="user",
         text="项目已上线",
-        sender_name="刘文涛",
+        sender_name="测试用户",
         source_name="技术开发测试",
     )
 
     result = LLMClient(CONFIG, client=client).summarize_messages([source])
 
     assert result == MessageDigestSummary(
-        key_events=(DigestEvent("项目已上线", "技术开发测试", "刘文涛"),),
+        key_events=(DigestEvent("项目已上线", "技术开发测试", "测试用户"),),
         todos=(
             DigestTodo(
-                "回归测试", "刘文涛", "今天", "技术开发测试", "刘文涛"
+                "回归测试", "测试用户", "今天", "技术开发测试", "测试用户"
             ),
         ),
         other_attention=(
-            DigestAttention("测试环境需持续关注", "技术开发测试", "刘文涛"),
+            DigestAttention("测试环境需持续关注", "技术开发测试", "测试用户"),
         ),
     )
     assert captured["temperature"] == 0

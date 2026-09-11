@@ -139,7 +139,7 @@ def _trigger_message() -> MinutesTriggerMessage:
 def test_processes_each_minute_token_only_once(tmp_path: Path) -> None:
     pipeline = FakePipeline()
     trigger = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         MeetingTriggerStateStore(tmp_path / "state.json", "ou_user"),
@@ -161,7 +161,7 @@ def test_reports_completed_meeting_suppressed_when_summary_is_empty(
 ) -> None:
     pipeline = FakePipeline(message_id="")
     trigger = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         MeetingTriggerStateStore(tmp_path / "state.json", "ou_user"),
@@ -178,7 +178,7 @@ def test_reports_completed_meeting_suppressed_when_summary_is_empty(
 def test_keeps_not_ready_recording_pending_and_retries_later(tmp_path: Path) -> None:
     pipeline = FakePipeline(fail_once=True)
     trigger = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         MeetingTriggerStateStore(tmp_path / "state.json", "ou_user"),
@@ -189,7 +189,7 @@ def test_keeps_not_ready_recording_pending_and_retries_later(tmp_path: Path) -> 
     first = trigger.run(1000)
     before_retry = trigger.run(1050)
     restarted = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         MeetingTriggerStateStore(tmp_path / "state.json", "ou_user"),
@@ -221,7 +221,7 @@ def test_recovers_pending_after_successful_push_state_write_failure(
     path = tmp_path / "state.json"
     pipeline = FakePipeline()
     trigger = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         FailSecondSaveStore(path, "ou_user"),
@@ -231,7 +231,7 @@ def test_recovers_pending_after_successful_push_state_write_failure(
     with pytest.raises(CheckpointError, match="state write"):
         trigger.run(1000)
     restarted = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         MeetingTriggerStateStore(path, "ou_user"),
@@ -251,7 +251,7 @@ def test_skips_successful_asr_with_no_effective_speech(tmp_path: Path) -> None:
 
     pipeline = EmptySpeechPipeline()
     trigger = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         MeetingTriggerStateStore(tmp_path / "state.json", "ou_user"),
@@ -276,7 +276,7 @@ def test_moves_retry_exhausted_recording_to_failed_state(tmp_path: Path) -> None
     pipeline = AlwaysFailPipeline()
     store = MeetingTriggerStateStore(tmp_path / "state.json", "ou_user")
     trigger = MeetingTrigger(
-        User("ou_user", "刘文涛"),
+        User("ou_user", "测试用户"),
         FakeSource(_trigger_message()),  # type: ignore[arg-type]
         pipeline,  # type: ignore[arg-type]
         store,

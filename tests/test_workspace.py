@@ -46,15 +46,15 @@ TIMEZONE = ZoneInfo("Asia/Shanghai")
 
 
 def _user() -> User:
-    return User("ou_user", "刘文涛")
+    return User("ou_user", "测试用户")
 
 
 def _summary() -> MessageDigestSummary:
     return MessageDigestSummary(
-        key_events=(DigestEvent("支付接口要求今天完成", "研发群", "薛量"),),
-        todos=(DigestTodo("完成支付接口", "刘文涛", "今天", "研发群", "薛量"),),
+        key_events=(DigestEvent("支付接口要求今天完成", "研发群", "测试同事"),),
+        todos=(DigestTodo("完成支付接口", "测试用户", "今天", "研发群", "测试同事"),),
         other_attention=(
-            DigestAttention("下周可能调整测试安排", "研发群", "薛量"),
+            DigestAttention("下周可能调整测试安排", "研发群", "测试同事"),
         ),
     )
 
@@ -64,7 +64,7 @@ def _minutes() -> MeetingMinutes:
         topic="迭代评审",
         conclusions=("本周五发布",),
         discussions=("性能压测结果可接受",),
-        todos=(DigestTodo("补充回归用例", "薛量", "周四"),),
+        todos=(DigestTodo("补充回归用例", "测试同事", "周四"),),
         pending_confirmations=("是否需要灰度",),
     )
 
@@ -82,7 +82,7 @@ def _recording() -> Recording:
 
 def test_record_mappers_only_use_central_schema_fields() -> None:
     digest_record = message_digest_record(
-        _summary(), 1_786_665_600, 1_786_680_000, 12, ("研发群", "薛量"), TIMEZONE
+        _summary(), 1_786_665_600, 1_786_680_000, 12, ("研发群", "测试同事"), TIMEZONE
     )
     meeting_record = meeting_minutes_record(_minutes(), _recording())
 
@@ -93,19 +93,19 @@ def test_record_mappers_only_use_central_schema_fields() -> None:
 
     assert digest_record[MessageDigestFields.MESSAGE_COUNT] == 12
     assert digest_record[MessageDigestFields.DATE] == 1_786_636_800_000
-    assert digest_record[MessageDigestFields.SOURCES] == "研发群、薛量"
+    assert digest_record[MessageDigestFields.SOURCES] == "研发群、测试同事"
     assert digest_record[MessageDigestFields.KEY_EVENTS] == (
-        "1. 支付接口要求今天完成｜研发群 · 薛量"
+        "1. 支付接口要求今天完成｜研发群 · 测试同事"
     )
     assert digest_record[MessageDigestFields.TODOS] == (
-        "完成支付接口｜刘文涛｜今天｜研发群 · 薛量"
+        "完成支付接口｜测试用户｜今天｜研发群 · 测试同事"
     )
     assert digest_record[MessageDigestFields.OTHER_ATTENTION] == (
-        "1. 下周可能调整测试安排｜研发群 · 薛量"
+        "1. 下周可能调整测试安排｜研发群 · 测试同事"
     )
     assert meeting_record[MeetingMinutesFields.TOPIC] == "迭代评审"
     assert meeting_record[MeetingMinutesFields.DATE] == 1_787_068_800_000
-    assert meeting_record[MeetingMinutesFields.TODOS] == "补充回归用例｜薛量｜周四"
+    assert meeting_record[MeetingMinutesFields.TODOS] == "补充回归用例｜测试同事｜周四"
 
 
 def test_workspace_store_round_trip_and_errors(tmp_path: Path) -> None:
@@ -115,7 +115,7 @@ def test_workspace_store_round_trip_and_errors(tmp_path: Path) -> None:
     workspace = UserWorkspace(
         open_id="ou_user",
         app_token="bascn_1",
-        app_name="刘文涛 的工作记录",
+        app_name="测试用户 的工作记录",
         app_url="https://vc.feishu.cn/base/bascn_1",
         message_table_id="tbl_msg",
         meeting_table_id="tbl_meeting",
@@ -257,9 +257,9 @@ def test_manager_creates_workspace_once_and_cleans_default_table(
     second = manager.ensure_workspace(_user())
 
     assert first == second
-    assert first.app_name == "刘文涛 的工作记录"
+    assert first.app_name == "测试用户 的工作记录"
     assert first.message_table_id and first.meeting_table_id
-    assert client.apps_created == ["刘文涛 的工作记录"]
+    assert client.apps_created == ["测试用户 的工作记录"]
     assert client.tables_created == ["消息摘要", "会议纪要"]
     assert client.deleted_tables == ["数据表"]
     table_names = {state[0] for state in client.tables.values()}
@@ -289,7 +289,7 @@ def test_manager_creates_new_app_when_local_metadata_is_lost(tmp_path: Path) -> 
     recreated = manager.ensure_workspace(_user())
 
     assert recreated.app_token != original.app_token
-    assert client.apps_created == ["刘文涛 的工作记录", "刘文涛 的工作记录"]
+    assert client.apps_created == ["测试用户 的工作记录", "测试用户 的工作记录"]
 
 
 def test_manager_persists_app_metadata_immediately_after_app_creation(
@@ -316,13 +316,13 @@ def test_manager_persists_app_metadata_immediately_after_app_creation(
     assert stored is not None and stored.app_token
     assert stored.message_table_id == ""
     assert stored.meeting_table_id == ""
-    assert client.apps_created == ["刘文涛 的工作记录"]
+    assert client.apps_created == ["测试用户 的工作记录"]
 
     completed = manager.ensure_workspace(_user())
 
     assert completed.app_token == stored.app_token
     assert completed.message_table_id and completed.meeting_table_id
-    assert client.apps_created == ["刘文涛 的工作记录"]
+    assert client.apps_created == ["测试用户 的工作记录"]
 
 
 def test_manager_recreates_deleted_app(tmp_path: Path) -> None:
@@ -333,7 +333,7 @@ def test_manager_recreates_deleted_app(tmp_path: Path) -> None:
 
     recreated = manager.ensure_workspace(_user())
 
-    assert client.apps_created == ["刘文涛 的工作记录", "刘文涛 的工作记录"]
+    assert client.apps_created == ["测试用户 的工作记录", "测试用户 的工作记录"]
     assert recreated.app_token != ""
 
 
@@ -569,7 +569,7 @@ def test_bitable_client_builds_user_identity_commands() -> None:
     def runner(command: list[str]) -> dict[str, object]:
         calls.append(command)
         if "whoami" in command:
-            return {"onBehalfOf": {"openId": "ou_user", "userName": "刘文涛"}}
+            return {"onBehalfOf": {"openId": "ou_user", "userName": "测试用户"}}
         joined = " ".join(command)
         if "/base/v3/bases" in joined:
             return {
@@ -596,7 +596,7 @@ def test_bitable_client_builds_user_identity_commands() -> None:
 
     client = BitableClient("ou_user", profile="user-one", runner=runner)
     client.ensure_identity()
-    app_token, url, bootstrap_table_id = client.create_app("刘文涛 的工作记录")
+    app_token, url, bootstrap_table_id = client.create_app("测试用户 的工作记录")
     record_id = client.create_record(
         "bascn_9", "tbl_1", {"摘要主题": "x", ARCHIVE_KEY_FIELD: "dg_key"}
     )
@@ -760,7 +760,7 @@ def _message() -> FeishuMessage:
         sender_id="ou_sender",
         sender_type="user",
         text="请在今天完成支付接口",
-        sender_name="薛量",
+        sender_name="测试同事",
     )
 
 

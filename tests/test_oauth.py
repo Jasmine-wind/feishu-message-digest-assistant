@@ -21,7 +21,7 @@ from feishu_assistant.oauth import (
 def _credential(**changes: object) -> OAuthCredential:
     values: dict[str, object] = {
         "open_id": "ou_user",
-        "name": "刘文涛",
+        "name": "测试用户",
         "access_token": "u-access-secret",
         "refresh_token": "u-refresh-secret",
         "access_expires_at": int(time.time()) + 3600,
@@ -36,11 +36,11 @@ def test_oauth_store_encrypts_tokens_upserts_user_and_consumes_state_once(
 ) -> None:
     store = OAuthStore(tmp_path / "oauth.sqlite3", tmp_path / "oauth.key")
     store.upsert(_credential())
-    store.upsert(_credential(name="刘文涛（更新）"))
+    store.upsert(_credential(name="测试用户（更新）"))
 
     loaded = store.get("ou_user")
     assert loaded is not None
-    assert loaded.name == "刘文涛（更新）"
+    assert loaded.name == "测试用户（更新）"
     assert loaded.access_token == "u-access-secret"
     assert store.users() == []
     store.mark_initialized("ou_user")
@@ -93,7 +93,7 @@ def test_oauth_exchange_and_refresh_use_official_server_endpoints() -> None:
         if request.url.path.endswith("/authen/v1/user_info"):
             return httpx.Response(
                 200,
-                json={"code": 0, "data": {"open_id": "ou_user", "name": "刘文涛"}},
+                json={"code": 0, "data": {"open_id": "ou_user", "name": "测试用户"}},
             )
         raise AssertionError(request.url)
 
@@ -189,7 +189,7 @@ def test_refresh_reuses_cached_app_token_and_stored_identity(tmp_path: Path) -> 
     client.refresh(first)
 
     assert first.open_id == "ou_user"
-    assert first.name == "刘文涛"
+    assert first.name == "测试用户"
     assert calls.count("/open-apis/auth/v3/app_access_token/internal") == 1
     assert calls.count("/open-apis/authen/v1/refresh_access_token") == 2
     assert not any(path.endswith("/user_info") for path in calls)
@@ -226,7 +226,7 @@ def test_stored_oauth_runner_reuses_existing_user_identity_command_shape() -> No
         if request.url.path.endswith("/authen/v1/user_info"):
             return httpx.Response(
                 200,
-                json={"code": 0, "data": {"open_id": "ou_user", "name": "刘文涛"}},
+                json={"code": 0, "data": {"open_id": "ou_user", "name": "测试用户"}},
             )
         if request.url.path.endswith("/im/v1/chats"):
             pages += 1
@@ -254,7 +254,7 @@ def test_stored_oauth_runner_reuses_existing_user_identity_command_shape() -> No
 
     assert identity["onBehalfOf"] == {
         "openId": "ou_user",
-        "userName": "刘文涛",
+        "userName": "测试用户",
     }
     assert chats["data"] == {"chats": [{"chat_id": "oc_1"}, {"chat_id": "oc_2"}]}
 

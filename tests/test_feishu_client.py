@@ -171,15 +171,15 @@ def test_discovers_user_and_enabled_human_conversations() -> None:
             )
         members = {
             "oc_group": [
-                {"member_id": "ou_target", "name": "刘文涛"},
-                {"member_id": "ou_other", "name": "薛量"},
+                {"member_id": "ou_target", "name": "测试用户"},
+                {"member_id": "ou_other", "name": "测试同事"},
             ],
             "oc_person": [
-                {"member_id": "ou_target", "name": "刘文涛"},
-                {"member_id": "ou_other", "name": "薛量"},
+                {"member_id": "ou_target", "name": "测试用户"},
+                {"member_id": "ou_other", "name": "测试同事"},
             ],
             "oc_bot": [
-                {"member_id": "ou_target", "name": "刘文涛"},
+                {"member_id": "ou_target", "name": "测试用户"},
                 {"member_id": "ou_bot", "name": "系统助手"},
             ],
         }
@@ -198,12 +198,12 @@ def test_discovers_user_and_enabled_human_conversations() -> None:
     user = client.resolve_user("ou_target")
     conversations = client.discover_conversations(user)
 
-    assert user == User("ou_target", "刘文涛", enabled=True)
+    assert user == User("ou_target", "测试用户", enabled=True)
     assert [
         (item.name, item.conversation_type, item.enabled) for item in conversations
     ] == [
         ("研发讨论群", ConversationType.GROUP, True),
-        ("薛量", ConversationType.PRIVATE, True),
+        ("测试同事", ConversationType.PRIVATE, True),
         ("系统助手", ConversationType.PRIVATE, False),
     ]
 

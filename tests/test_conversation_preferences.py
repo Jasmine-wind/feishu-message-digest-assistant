@@ -22,7 +22,7 @@ def test_new_conversations_are_disabled_and_existing_choice_is_preserved(
 ) -> None:
     store = ConversationPreferenceStore(tmp_path / "oauth.sqlite3")
     group = _conversation("oc_group", "研发群", ConversationType.GROUP)
-    private = _conversation("oc_private", "薛量", ConversationType.PRIVATE)
+    private = _conversation("oc_private", "测试同事", ConversationType.PRIVATE)
 
     first = store.sync_discovered("ou_user", [group, private])
     store.save_enabled(
@@ -42,7 +42,7 @@ def test_new_conversations_are_disabled_and_existing_choice_is_preserved(
     assert all(not item.enabled for item in first)
     assert [(item.name, item.enabled) for item in second] == [
         ("研发协作群", True),
-        ("薛量", False),
+        ("测试同事", False),
         ("产品讨论群", False),
     ]
 
@@ -52,7 +52,7 @@ def test_temporarily_missing_conversation_is_not_deleted_or_reset(
 ) -> None:
     store = ConversationPreferenceStore(tmp_path / "oauth.sqlite3")
     group = _conversation("oc_group", "研发群", ConversationType.GROUP)
-    private = _conversation("oc_private", "薛量", ConversationType.PRIVATE)
+    private = _conversation("oc_private", "测试同事", ConversationType.PRIVATE)
     store.sync_discovered("ou_user", [group, private])
     store.save_enabled(
         "ou_user",
@@ -86,14 +86,14 @@ def test_digest_configuration_uses_only_saved_enabled_conversations(
 ) -> None:
     store = ConversationPreferenceStore(tmp_path / "oauth.sqlite3")
     group = _conversation("oc_group", "技术开发测试", ConversationType.GROUP)
-    private = _conversation("oc_private", "薛量", ConversationType.PRIVATE)
+    private = _conversation("oc_private", "测试同事", ConversationType.PRIVATE)
     new_group = _conversation("oc_new", "新项目群", ConversationType.GROUP)
     discovered = [group, private]
     captured: list[list[str]] = []
 
     class Reader:
         def resolve_user(self) -> User:
-            return User("ou_user", "刘文涛")
+            return User("ou_user", "测试用户")
 
         def discover_conversations(self, user: User) -> list[Conversation]:
             assert user.open_id == "ou_user"
@@ -160,7 +160,7 @@ def test_oauth_digest_reuses_saved_identity_and_does_not_rediscover_chats(
     class OAuthUsers:
         @staticmethod
         def users() -> list[User]:
-            return [User("ou_user", "刘文涛")]
+            return [User("ou_user", "测试用户")]
 
     class Reader:
         def resolve_user(self) -> User:

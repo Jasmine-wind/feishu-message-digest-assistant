@@ -23,7 +23,7 @@ class FakeOAuthClient:
         now = int(time.time())
         return OAuthCredential(
             open_id="ou_user",
-            name="刘文涛",
+            name="测试用户",
             access_token="access",
             refresh_token="refresh",
             access_expires_at=now + 7200,
@@ -113,7 +113,7 @@ def test_callback_upserts_user_initializes_workspace_and_sets_session(
         return UserWorkspace(
             user.open_id,
             "base",
-            "刘文涛 的工作记录",
+            "测试用户 的工作记录",
             "https://example/base",
             "tbl_message",
             "tbl_meeting",
@@ -161,7 +161,7 @@ def test_conversation_page_discovers_disabled_and_saves_per_user_choices(
     store.mark_initialized("ou_user")
     discovered = [
         Conversation("oc_group", "技术开发测试", ConversationType.GROUP, False),
-        Conversation("oc_private", "薛量", ConversationType.PRIVATE, False),
+        Conversation("oc_private", "测试同事", ConversationType.PRIVATE, False),
     ]
 
     def discover(open_id: str) -> list[Conversation]:
@@ -178,7 +178,7 @@ def test_conversation_page_discovers_disabled_and_saves_per_user_choices(
 
     assert status.startswith("200")
     assert "技术开发测试".encode() in body
-    assert "薛量".encode() in body
+    assert "测试同事".encode() in body
     assert b" checked" not in body
 
     status, _, body = _request(
