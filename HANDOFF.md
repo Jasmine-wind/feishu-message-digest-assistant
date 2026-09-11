@@ -140,6 +140,7 @@ src/feishu_assistant/  核心 CLI、配置、OAuth、飞书客户端、摘要、
 
 - branch：`main`
 - cleanup 前可恢复且已验证、已 push 的 checkpoint：`1231bad3128bd8e6c1c967faea7cf3da82bd3ce6`
-- 最终清理 commit SHA：以交接提交后的 `git rev-parse HEAD` 为准，并在交接结果中报告。
-- working tree：最终提交后应为 clean。
-- push：cleanup 前 checkpoint 已 push；最终清理 commit 需确认已 push。
+- 清理内容已提交并 push 的 commit：`77f0c11c445b73ccf0e336ea240c8346857d9218`。
+- 当前交接 HEAD：以交接结果中的 `git rev-parse HEAD` 为准；本文件所在提交的自身 SHA 不可在提交前写入文件。
+- working tree：clean；仅保留被 Git 忽略的本地持久化 `artifacts/`。
+- push：当前交接提交已 push 到 `origin/main`。
