@@ -99,7 +99,7 @@ src/feishu_assistant/  核心 CLI、配置、OAuth、飞书客户端、摘要、
  uv.lock                锁定依赖
  assistant.toml.example 非敏感 TOML 配置模板
  .env.example           环境变量模板
- artifacts/             本地持久化运行状态；被 Git 忽略
+ artifacts/             首次运行生成的持久化运行状态；本交接包不包含
 ```
 
 ## 7. Configuration
@@ -125,7 +125,7 @@ src/feishu_assistant/  核心 CLI、配置、OAuth、飞书客户端、摘要、
 - 当前没有独立前端、worker 或 migration 工具；Web UI 是 `webapp.py` 中的服务端 HTML，两个 systemd 进程构成主运行链路。
 - Base 当前实现以写入和幂等归档为主，CLI 没有记录删除流程。
 - 兼容路径使用 `FEISHU_USER_OAUTH_PROFILES`/旧 token 配置时会调用外部 `lark-cli`；正常 Web OAuth 用户主链路使用本地加密 token，不应假设两条路径环境相同。
-- 本地 `artifacts/` 可能包含现有 OAuth 凭据和业务状态，未纳入 Git；迁移机器前必须确认备份与权限，不能用空目录覆盖生产状态。
+- 本交接包不包含 `artifacts/`；已有部署的该目录可能包含 OAuth 凭据和业务状态，迁移机器前必须确认备份与权限，不能用空目录覆盖生产状态。
 
 ## 10. Recommended Next Work
 
@@ -138,9 +138,10 @@ src/feishu_assistant/  核心 CLI、配置、OAuth、飞书客户端、摘要、
 
 ## 11. Git Handoff Point
 
-- branch：`main`
-- cleanup 前可恢复且已验证、已 push 的 checkpoint：`1231bad3128bd8e6c1c967faea7cf3da82bd3ce6`
-- 清理内容已提交并 push 的 commit：`77f0c11c445b73ccf0e336ea240c8346857d9218`。
-- 当前交接 HEAD：以交接结果中的 `git rev-parse HEAD` 为准；本文件所在提交的自身 SHA 不可在提交前写入文件。
-- working tree：clean；仅保留被 Git 忽略的本地持久化 `artifacts/`。
-- push：当前交接提交已 push 到 `origin/main`。
+Original repository handoff:
+
+- Branch: `main`
+- Commit: `09a0ff5121c73f7e8b279e54a82deeaada95ed2e`
+- Remote state: pushed before packaging
+
+本目录是从上述正式交接点生成的可压缩快照，已主动移除 `.git/`、本地配置、`artifacts/`、开发环境和构建产物。继续开发时使用模板重新创建配置和运行状态。
