@@ -42,7 +42,7 @@ Clone and install:
 ```bash
 git clone git@github.com:Jasmine-wind/feishu-message-digest-assistant.git
 cd feishu-message-digest-assistant
-uv sync --extra test
+uv sync --extra test --frozen
 ```
 
 Create local configuration:
@@ -144,16 +144,16 @@ New conversations are disabled until the employee enables them in `/app/conversa
 
 ```bash
 # OAuth and conversation settings web service
-feishu-assistant oauth-web
+uv run feishu-assistant oauth-web
 
 # Scheduled message digest
-feishu-assistant digest-scheduler
+uv run feishu-assistant digest-scheduler
 
 # Controlled single digest for acceptance or recovery
-feishu-assistant digest
+uv run feishu-assistant digest
 
 # Local OpenAPI usage report
-feishu-assistant api-usage --day 2026-08-24
+uv run feishu-assistant api-usage --day 2026-08-24
 ```
 
 Meeting commands remain present for compatibility but return an error before any API client is created while `meeting_summary=false`.
@@ -177,10 +177,10 @@ Never commit `.env`, `assistant.toml`, or `artifacts/`. The OAuth database and e
 uv run pytest
 uv run ruff check src tests
 uv run mypy src
-python -m compileall -q src tests
-python -m build --wheel
+uv run python -m compileall -q src tests
+uv run python -m build --wheel
 ```
 
 ## Deployment
 
-See [docs/deployment.md](docs/deployment.md) for the complete systemd and reverse-proxy procedure. Architecture and recovery details are in [docs/development.md](docs/development.md). Historical validation records remain local under the ignored `docs/archive/` directory and are not part of deployment commits.
+See [HANDOFF.md](HANDOFF.md) for the current development checkpoint. See [docs/deployment.md](docs/deployment.md) for the complete systemd and reverse-proxy procedure. Architecture and recovery details are in [docs/development.md](docs/development.md).

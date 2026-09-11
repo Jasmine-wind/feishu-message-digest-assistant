@@ -204,6 +204,6 @@ uv sync --extra test --frozen
 uv run pytest
 uv run ruff check src tests
 uv run mypy src
-python -m compileall -q src tests
-python -m build --wheel
+uv run python -m compileall -q src tests
+uv run python -m build --wheel
 ```

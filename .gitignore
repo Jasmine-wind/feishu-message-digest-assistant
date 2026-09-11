@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+*.part
 
 .venv/
 .pytest_cache/
@@ -15,7 +16,6 @@ htmlcov/
 assistant.toml
 
 artifacts/
-docs/archive/
 dist/
 build/
 *.whl

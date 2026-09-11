@@ -155,7 +155,13 @@ The OAuth database and encryption key must be backed up together. Keep both at m
 5. Confirm meeting traffic remains zero:
 
    ```bash
-   feishu-assistant api-usage --day YYYY-MM-DD --caller meeting_trigger
+   sudo -u feishu-assistant bash -c '
+     set -a
+     . /etc/feishu-message-digest-assistant/env
+     set +a
+     cd /opt/feishu-message-digest-assistant
+     .venv/bin/feishu-assistant api-usage --day YYYY-MM-DD --caller meeting_trigger
+   '
    ```
 
 6. Confirm scheduler times are `08:00`, `12:00`, and `18:00` in `Asia/Shanghai`.
